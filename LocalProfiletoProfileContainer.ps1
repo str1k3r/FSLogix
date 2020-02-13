@@ -1,7 +1,15 @@
-#### EDIT ME
+#########################################################################################
+# Setup Parameter first here newprofilepath
+# Requires -RunAsAdministrator
+# Requires FSLogix Agent (frx.exe)
+#########################################################################################
+# Example "\\domain.com\share\path"
+# fslogix Root profile path
 $newprofilepath = "\\domain.com\share\path"
 
-#### Don't edit me
+#########################################################################################
+# Do not edit here
+#########################################################################################
 $ENV:PATH=”$ENV:PATH;C:\Program Files\fslogix\apps\”
 $oldprofiles = gci c:\users | ?{$_.psiscontainer -eq $true} | select -Expand fullname | sort | out-gridview -OutputMode Multiple -title "Select profile(s) to convert"
 

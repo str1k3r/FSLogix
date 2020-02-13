@@ -1,11 +1,22 @@
-#Defining paths
-$UPDPath = '\\server1\upd$\Desktop'
-$NewProfilePath = '\\server1\fslogix$'
+#########################################################################################
+# Setup Parameter first here UPDPath NewProfilePath DiskProfileFolder UserListe Users
+# Requires -RunAsAdministrator
+# My Userprofiles come only with SAMAccount Name without Domain "\Username\2012R2\UPM_Profile
+#########################################################################################
+# Example from my UPM Path "\\path_to_your_share\upd$\Profile"
+# fslogix Root profile path
+$NewProfilePath = '\\path_to_your_share\fslogix$'
+# Profile Disk Root profile path
+$UPDPath = '\\path_to_your_share\upd$\'
+# Disk Profile Folder - First Path to Disk Profile Folder - see my example above
 $DiskProfileFolder = 'Profile'
-
 #Define the path to the user list and read it
 $UserListe = 'C:\temp\UserMigrate.txt'
 $Users = Get-Content $UserListe
+
+#########################################################################################
+# Do not edit here
+#########################################################################################
 
 foreach ($U in $Users){
 	# User from the file corresponds to SAM

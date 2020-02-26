@@ -60,25 +60,26 @@ function checkFileStatus($filePath)
     }
 function vhdmount($v) {
 try {
-Mount-VHD -Path $v -ReadOnly -PassThru | Get-Disk | Get-Partition | Get-Volume -ErrorAction Stop
+$DriveLetter = ""
+#Mount-VHD -Path C:\Share\Container\manuel_S-1-5-21-628618687-1131549682-2054828346-500\Profile_manuel.VHDX -ReadOnly -ErrorAction Stop
+Mount-VHD -Path $v -ErrorAction Stop
 return "0"
 } catch {
 return "1"
 }
 }
 function vhdincrease($v) {
-$i = "0"
-$o = [math]::Round((gi $v | select -expand length)/1mb,2)
 try {
-Resize-VHD $v -SizeBytes $MaxSize -ErrorAction Ignore
-$r = 0
+Resize-VHD $v -SizeBytes $MaxSize #-ErrorAction Ignore
+Get-Partition -DiskNumber $Partition | Set-Partition -NewDriveLetter $DriveLetter
+$Max = (Get-PartitionSupportedSize -DriveLetter $DriveLetter -ErrorAction Ignore).sizeMax
+Resize-Partition -DriveLetter $DriveLetter -Size $Max -ErrorAction Ignore
+return "0"
 } catch {
-$r = 1
+return "1"
 }
-$n = [math]::Round((gi $v | select -expand length)/1mb,2)
-$dif = [math]::Round(($o-$n),2)
-$i | select @{n='VHD';e={Split-Path $v -Leaf}},@{n='Before_MB';e={$o}},@{n='After_MB';e={$n}},@{n='Increase_MB';e={$dif}},@{n='Success';e={if ($r -eq "0"){$true} else {$false}}},@{n='VHD_Fullname';e={$v}}
 }
+
 function vhddismount($v) {
 try {
 Dismount-VHD $v -ErrorAction stop
@@ -91,8 +92,10 @@ $smtpserver = "smtpserver.fqdn" ##### SMTP Server
 $to = "your email address" ##### email report to - "email1","email2" for multiple
 $from = "fslogixreport@yourcompany.com" ##### email from
 $rootfolder = "C:\Share\Container" ##### root path to vhd(x) files
-$MaxSize = "50474836480" ##### Max VHDX Size
+$MaxSize = 60GB ##### Max VHDX Size
 $vhds = (gci $rootfolder -recurse -Include *.vhd,*.vhdx).fullname
+$Partition = 2 ##### Count of Disks
+$DriveLetter = "z" ##### Free DriveLetter for temporary moun
 [System.Collections.ArrayList]$info = @()
 $t = 0
 foreach ($vhd in $vhds) {
@@ -102,20 +105,26 @@ if ($locked -eq $true) {
 $info.add(($t | select @{n='VHD';e={Split-Path $vhd -Leaf}},@{n='Before_MB';e={0}},@{n='After_MB';e={0}},@{n='Reduction_MB';e={0}},@{n='Success';e={"Locked"}},@{n='VHD_Fullname';e={$vhd}})) | Out-Null
 continue
 }
+
 $mount = vhdmount -v $vhd
-Resize-Partition -DriveLetter t -Size $MaxSize -ErrorAction Ignore
 if ($mount -eq "1") {
+"Mounting $vhd failed "
 $e = "Mounting $vhd failed "+(get-date).ToString()
 #Send-MailMessage -SmtpServer $smtpserver -From $from -To $to -Subject "FSLogix VHD(X) ERROR" -Body "$e" -Priority High -BodyAsHtml
 break
-}
-$info.add((vhdincrease -v $vhd)) | Out-Null
+}else{"Mounting $vhd success with DriveLetter $DriveLetter"}
+$vhdincrease = vhdincrease -v $vhd
+if ($vhdincrease -eq "1") {
+"Failed to increase $vhd "
+}else{"Success to increase $vhd "}
+
 $dismount = vhddismount -v $vhd
 if ($dismount -eq "1") {
+"Failed to dismount $vhd "
 $e = "Failed to dismount $vhd "+(get-date).ToString()
 #Send-MailMessage -SmtpServer $smtpserver -From $from -To $to -Subject "FSLogix VHD(X) ERROR" -Body "$e" -Priority High -BodyAsHtml
 break
-}
+}else{"Success to dismount $vhd "}
 }
 $Header = @"
 <style>

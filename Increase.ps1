@@ -60,7 +60,7 @@ function checkFileStatus($filePath)
     }
 function vhdmount($v) {
 try {
-Mount-VHD -Path $v -ReadOnly -ErrorAction Stop -PassThru | Get-Disk | Get-Partition | Get-Volume
+Mount-VHD -Path $v -ReadOnly -PassThru | Get-Disk | Get-Partition | Get-Volume -ErrorAction Stop
 return "0"
 } catch {
 return "1"
@@ -70,7 +70,7 @@ function vhdincrease($v) {
 $i = "0"
 $o = [math]::Round((gi $v | select -expand length)/1mb,2)
 try {
-Resize-VHD $v -SizeBytes $MaxSize
+Resize-VHD $v -SizeBytes $MaxSize -ErrorAction Ignore
 $r = 0
 } catch {
 $r = 1
@@ -103,7 +103,7 @@ $info.add(($t | select @{n='VHD';e={Split-Path $vhd -Leaf}},@{n='Before_MB';e={0
 continue
 }
 $mount = vhdmount -v $vhd
-Resize-Partition -DriveLetter t -Size 50474836480
+Resize-Partition -DriveLetter t -Size $MaxSize -ErrorAction Ignore
 if ($mount -eq "1") {
 $e = "Mounting $vhd failed "+(get-date).ToString()
 #Send-MailMessage -SmtpServer $smtpserver -From $from -To $to -Subject "FSLogix VHD(X) ERROR" -Body "$e" -Priority High -BodyAsHtml

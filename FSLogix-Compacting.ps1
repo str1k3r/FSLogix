@@ -3,15 +3,17 @@
 This script will compact FSLogix VHD/VHDX profiles in the profile share.
 
 .DESCRIPTION
-Original written by David Ott
+
 This script will compact FSLogix VHD/VHDX profiles in the profile share.  It would also work for
 any directory containing VHD/VHDX files.
 Test before using!!
+Search for "#####" to find the sections you need to edit for your environment
 
 .NOTES
-  Version:        1.0
-  Author:         Manuel Winkel <www.deyda.net>
-  Creation Date:  2020-03-04
+  Version:          1.0
+  Author:           David Ott
+  Rewrite Author:   Manuel Winkel <www.deyda.net>
+  Creation Date:    2020-03-04
   Purpose/Change:
 #>
 
@@ -19,9 +21,6 @@ Test before using!!
 #Requires -RunAsAdministrator
 #Requires -Module Hyper-V
 
-Search for "#####" to find the sections you need to edit for your environment
-#>
-The script copies the existing folders "desktop" and "documents" into the onedrive directory
 Function Set-AlternatingRows {
     [CmdletBinding()]
     Param(

@@ -1,3 +1,17 @@
+<#
+.SYNOPSIS
+This script migrate from Profile Disk to FSLogix Profile Container
+
+.DESCRIPTION
+Test before using!!
+
+.NOTES
+  Version:          1.0
+  Author:           
+  Rewrite Author:   Manuel Winkel <www.deyda.net>
+  Creation Date:    2020-03-04
+  Purpose/Change:
+#>
 #########################################################################################
 # Setup Parameter first here UPDPath NewProfilePath DiskProfileFolder UserListe Users
 # Requires -RunAsAdministrator

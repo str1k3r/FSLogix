@@ -1,19 +1,32 @@
+<#
+.SYNOPSIS
+This script will increase FSLogix VHD/VHDX profiles in the profile share.
+
+.DESCRIPTION
+This command installed the Hyper-V Module. A restart is required
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+Install-WindowsFeature -Name Hyper-V-PowerShell
+
+How-To for Hyper-V Module
+https://www.altaro.com/hyper-v/install-hyper-v-powershell-module/
+
+It would also work for any directory containing VHD/VHDX files.
+Test before using!!
+Search for "#####" to find the sections you need to edit for your environment
+
+.NOTES
+  Version:          1.0
+  Author:           David Ott
+  Rewrite Author:   Manuel Winkel <www.deyda.net>
+  Creation Date:    2020-03-04
+  Purpose/Change:
+#>
+
 #Requires -Version 5
 #Requires -RunAsAdministrator
 #Requires -Module Hyper-V
-#This command installed the Hyper-V Module. A restart is required
-#Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
-#Install-WindowsFeature -Name Hyper-V-PowerShell
-#How-To for Hyper-V Module
-#https://www.altaro.com/hyper-v/install-hyper-v-powershell-module/
-<#
-Rewrite by Manuel Winkel
-Written by David Ott
-This script will increase FSLogix VHD/VHDX profiles in the profile share.  It would also work for
-any directory containing VHD/VHDX files.
-Test before using!!
-Search for "#####" to find the sections you need to edit for your environment
-#>
+
+
 Function Set-AlternatingRows {
     [CmdletBinding()]
     Param(
